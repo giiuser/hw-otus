@@ -31,14 +31,13 @@ func Unpack(str string) (string, error) {
 			}
 			if cnt > 0 {
 				res.WriteString(strings.Repeat(string(buf), cnt-1))
-				buf = 0
 			} else {
 				splitArr := []rune(res.String())
 				splitArr = splitArr[:len(splitArr)-1]
 				res.Reset()
 				res.WriteString(string(splitArr))
-				buf = 0
 			}
+			buf = 0
 		} else {
 			buf = char
 			res.WriteRune(char)
