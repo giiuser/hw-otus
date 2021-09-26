@@ -48,6 +48,18 @@ func TestTop10(t *testing.T) {
 		require.Len(t, Top10(""), 0)
 	})
 
+	t.Run("result doesn't contain spaces or any special chars", func(t *testing.T) {
+		require.NotContains(t, Top10("м\n	д   \t\n   в"), " ")
+	})
+
+	t.Run("result contains right strings", func(t *testing.T) {
+		require.Contains(t, Top10("м\n	д   \t\n   в"), "д")
+	})
+
+	t.Run("length of result <= 10", func(t *testing.T) {
+		require.LessOrEqual(t, len(Top10("а б \n в   г")), 10)
+	})
+
 	t.Run("positive test", func(t *testing.T) {
 		if taskWithAsteriskIsCompleted {
 			expected := []string{
