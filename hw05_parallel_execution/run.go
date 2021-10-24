@@ -24,7 +24,7 @@ func Run(tasks []Task, n, m int) error {
 
 	var wg sync.WaitGroup
 
-	var chTasks = make(chan Task)
+	chTasks := make(chan Task)
 
 	var numErrors int32
 
