@@ -26,6 +26,11 @@ func Run(tasks []Task, n, m int) error {
 
 	chTasks := make(chan Task)
 
+	defer func() {
+		close(chTasks)
+		wg.Wait()
+	}()
+
 	var numErrors int32
 
 	for i := 0; i < n; i++ {
@@ -43,16 +48,9 @@ func Run(tasks []Task, n, m int) error {
 
 	for _, task := range tasks {
 		if !ignoreErrors && atomic.LoadInt32(&numErrors) >= int32(m) {
-			break
+			return ErrErrorsLimitExceeded
 		}
 		chTasks <- task
-	}
-
-	close(chTasks)
-	wg.Wait()
-
-	if !ignoreErrors && numErrors >= int32(m) {
-		return ErrErrorsLimitExceeded
 	}
 
 	return nil
