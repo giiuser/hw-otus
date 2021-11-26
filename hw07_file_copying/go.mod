@@ -1,3 +1,3 @@
-module github.com/fixme_my_friend/hw07_file_copying
+module github.com/giiuser/hw-otus/hw07_file_copying
 
 go 1.16
