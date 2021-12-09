@@ -82,8 +82,7 @@ func Validate(v interface{}) error {
 }
 
 func validator(tag, field string, value reflect.Value, errors ValidationErrors) ValidationErrors {
-	switch value.Kind() {
-	case reflect.String:
+	if value.Kind() == reflect.String {
 		validators := validateString(tag, field, value.String())
 		for _, validator := range validators {
 			err := validator.validate()
@@ -92,7 +91,8 @@ func validator(tag, field string, value reflect.Value, errors ValidationErrors) 
 			}
 		}
 		return errors
-	case reflect.Int:
+	}
+	if value.Kind() == reflect.Int {
 		validators := validateInt(tag, field, int(value.Int()))
 		for _, validator := range validators {
 			err := validator.Validate()
@@ -101,16 +101,15 @@ func validator(tag, field string, value reflect.Value, errors ValidationErrors) 
 			}
 		}
 		return errors
-	case reflect.Slice:
+	}
+	if value.Kind() == reflect.Slice {
 		for i := 0; i < value.Len(); i++ {
 			elem := value.Index(i)
 			errors = append(errors, validator(tag, field, elem, ValidationErrors{})...)
 		}
 		return errors
-	default:
-		log.Println("Type is not supported")
-		return nil
 	}
+	return nil
 }
 
 func validateString(tag, field, value string) []Validator {
