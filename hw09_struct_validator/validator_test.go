@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 type UserRole string
@@ -41,11 +43,51 @@ func TestValidate(t *testing.T) {
 		in          interface{}
 		expectedErr error
 	}{
-		{
-			// Place your code here.
-		},
-		// ...
-		// Place your code here.
+		{User{
+			ID:     "",
+			Name:   "",
+			Age:    70,
+			Email:  "",
+			Role:   "",
+			Phones: []string{""},
+			meta:   json.RawMessage(""),
+		}, ValidationErrors([]ValidationError{
+			{Field: "ID", Err: ErrLength},
+			{Field: "Age", Err: ErrMax},
+			{Field: "Email", Err: ErrRegexp},
+			{Field: "Role", Err: ErrNotIn},
+			{Field: "Phones", Err: ErrLength},
+		})},
+		{User{
+			ID:     "11111",
+			Name:   "Sergio",
+			Age:    12,
+			Email:  "test@example.com",
+			Role:   "admin",
+			Phones: []string{"1239997788"},
+		}, ValidationErrors([]ValidationError{
+			{Field: "ID", Err: ErrLength},
+			{Field: "Age", Err: ErrMin},
+			{Field: "Phones", Err: ErrLength},
+		})},
+		{App{
+			Version: "1234",
+		}, ValidationErrors{ValidationError{
+			"Version", ErrLength,
+		}}},
+		{App{Version: "11111"}, nil},
+		{Response{Code: 200, Body: ""}, nil},
+		{Response{
+			Code: 310,
+			Body: "",
+		}, ValidationErrors{ValidationError{
+			Field: "Code",
+			Err:   ErrNotIn,
+		}}},
+		{Token{}, nil},
+		{nil, ValidationErrors{ValidationError{
+			"", ErrInvalidStruct,
+		}}},
 	}
 
 	for i, tt := range tests {
@@ -53,7 +95,14 @@ func TestValidate(t *testing.T) {
 			tt := tt
 			t.Parallel()
 
-			// Place your code here.
+			err := Validate(tt.in)
+
+			if tt.expectedErr == nil {
+				require.NoError(t, err)
+			} else {
+				require.ErrorAs(t, err, &ValidationErrors{})
+				require.EqualError(t, err, tt.expectedErr.Error())
+			}
 			_ = tt
 		})
 	}
