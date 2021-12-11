@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/valyala/fastjson v1.6.3 // indirect
 	golang.org/x/perf v0.0.0-20211012211434-03971e389cd3 // indirect
